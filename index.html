@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Simple clicker</title>
+	<meta name="viewport" content="width=device-width", initial-scale="1.0", user-scalable="no">
+
+	<link rel="manifest" href="manifest.json">
+
+    <style>
+      html, body, pre, code, kbd, samp {
+		padding: 10px;
+        font-family: "font-family you want to use";
+      }
+    </style>
+	 <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+
+
+
+	<link href="https://unpkg.com/nes.css@2.2.0/css/nes.min.css" rel="stylesheet">
+	<link href="https://unpkg.com/nes.css/css/nes-core.min.css" rel="stylesheet">
+</head>
+<body>
+
+	<div class="nes-container with-title is-centered" id="app">
+	  <p class="title">{{ clicks }}</p>
+	  <p><button class="nes-btn" @click="click" id="qwerty">Click</button></p>
+	</div>
+
+	<script src="js/vue.min.js"></script>
+	<script src="js/index.js"></script>
+	<script>
+		let deferredPrompt;
+		window.addEventListener('beforeinstallprompt', (e) => {
+		  // Prevent Chrome 67 and earlier from automatically showing the prompt
+		  e.preventDefault();
+		  // Stash the event so it can be triggered later.
+		  deferredPrompt = e;
+		  btnAdd.style.display = 'block';
+		});
+
+		document.querySelector('#qwerty').addEventListener('click', (e) => {
+		  btnAdd.style.display = 'none';
+		  // показываем окно установки
+		  deferredPrompt.prompt();
+		  // ждём ответа пользователя
+		  deferredPrompt.userChoice
+		    .then((choiceResult) => {
+		      if (choiceResult.outcome === 'accepted') {
+		        console.log('User accepted the A2HS prompt');
+		      } else {
+		        console.log('User dismissed the A2HS prompt');
+		      }
+		      deferredPrompt = null;
+		    });
+		});
+
+		//Регестрация воркера
+	    if ('serviceWorker' in navigator) {
+	        navigator.serviceWorker
+	            .register('sw.js')
+	            .then(function () {
+	                console.log('Registration succeeded. Scope is ');
+	            })
+	            .catch(function (error) {
+	                console.error('Trouble with sw: ', error);
+	            });
+	    }		
+	</script>
+</body>
+</html>
