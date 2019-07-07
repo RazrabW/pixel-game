@@ -1,4 +1,4 @@
-const CACHE_NAME = 'your-super-game-name-v1.0.3';
+/* const CACHE_NAME = 'your-super-game-name-v1.0.3';
 const cacheList = [ // ресурсв которые бросаем в кэш
 	'/', //обязательно
     'index.html',
@@ -32,7 +32,7 @@ this.addEventListener('activate', function (event) {
 this.addEventListener('fetch', function (event) {
     if (
         event.request.method !== 'GET' ||
-        event.request.url.indexOf('http://') === 0
+        event.request.url.indexOf('http://voltronshop.ru') === 0
     ) {
         return;
     }
@@ -42,4 +42,4 @@ this.addEventListener('fetch', function (event) {
             return response || fetch(event.request);
         })
     );
-});
+});*/

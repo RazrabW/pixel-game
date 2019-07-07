@@ -1,71 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>Simple clicker</title>
-	<meta name="viewport" content="width=device-width", initial-scale="1.0", user-scalable="no">
+    <meta charset="UTF-8">
+    <title>Simple clicker</title>
+        <!-- Yandex Games SDK -->
 
-	<link rel="manifest" href="manifest.json">
-
-    <style>
-      html, body, pre, code, kbd, samp {
-		padding: 10px;
-        font-family: "font-family you want to use";
-      }
-    </style>
-	 <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
-
-
-
-	<link href="https://unpkg.com/nes.css@2.2.0/css/nes.min.css" rel="stylesheet">
-	<link href="https://unpkg.com/nes.css/css/nes-core.min.css" rel="stylesheet">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="images/favicon-16x16.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="mask-icon" href="images/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <meta name="viewport" content="width=device-width" , initial-scale="1.0" , user-scalable="no">
+    <meta name="apple-mobile-web-app-title" content="Пацанский кликер">
+    <meta name="application-name" content="Пацанский кликер">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    
+    <link rel="stylesheet" href="css/index.css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css@2.2.0/css/nes.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/nes.css/css/nes-core.min.css" rel="stylesheet">
 </head>
 <body>
 
-	<div class="nes-container with-title is-centered" id="app">
-	  <p class="title">{{ clicks }}</p>
-	  <p><button class="nes-btn" @click="click" id="qwerty">Click</button></p>
-	</div>
+<div id="app" class="nes-container with-title is-centered">
+    <p class="title">Пацанский кликер</p>
+    <div class="nes-container">
+        <h1>{{ lang.ru.money }} - {{ coins.toFixed(4) }}</h1>
+        <p>{{ lang.ru.power }} - {{ power.toFixed(4) }}</p>
+        <p>Коинов в сек. - {{ auto_coins.toFixed(4) }}</p>
+        <button @click="click" class="nes-btn is-primary" id="click">Кликнуть + 0.0001</button><br><br>
+    </div>
+    <div class="nes-container is-left">
+        <div v-for="item in levels">
+            {{ item.text }} + {{ item.auto_coins }}<button @click="auto" v-bind:data-id="item.id" class="nes-btn">{{ item.price.toFixed(4) }}</button><br><br>
+        </div>
+    </div>
 
-	<script src="js/vue.min.js"></script>
-	<script src="js/index.js"></script>
-	<script>
-		let deferredPrompt;
-		window.addEventListener('beforeinstallprompt', (e) => {
-		  // Prevent Chrome 67 and earlier from automatically showing the prompt
-		  e.preventDefault();
-		  // Stash the event so it can be triggered later.
-		  deferredPrompt = e;
-		  btnAdd.style.display = 'block';
-		});
+    <button onclick="document.getElementById('dialog-shop').showModal();" class="nes-btn is-primary">{{ lang.ru.shop }}</button>
+    <button onclick="document.getElementById('dialog-setting').showModal();" class="nes-btn is-primary">{{ lang.ru.setting }}</button>
+    <button onclick="document.getElementById('dialog-admin').showModal();" class="nes-btn is-warning">Админ</button>
 
-		document.querySelector('#qwerty').addEventListener('click', (e) => {
-		  btnAdd.style.display = 'none';
-		  // показываем окно установки
-		  deferredPrompt.prompt();
-		  // ждём ответа пользователя
-		  deferredPrompt.userChoice
-		    .then((choiceResult) => {
-		      if (choiceResult.outcome === 'accepted') {
-		        console.log('User accepted the A2HS prompt');
-		      } else {
-		        console.log('User dismissed the A2HS prompt');
-		      }
-		      deferredPrompt = null;
-		    });
-		});
+    <!--SHOP-->
+    <dialog id="dialog-shop" class="nes-dialog is-rounded">
+        <form method="dialog">
+            <div class="nes-container is-centered with-title">
+                <p class="title">{{ lang.ru.shop }}</p>
+                <p>{{ lang.ru.power }} - {{ power.toFixed(4) }}</p>
+                <p>{{ lang.ru.money }} - {{ coins.toFixed(4) }}</p>
+                <p v-for="item in shop">
+                    <a href="javascript:void(0)" class="nes-btn" @click="buy" v-bind:data-id="item.id">
+                        <span class="nes-text is-error">{{ item.price.toFixed(4) }}</span> {{ item.text }} — {{ item.power.toFixed(4) }}
+                    </a>
+                </p>
+            </div>
+            <menu class="dialog-menu"><button class="nes-btn is-primary">{{ lang.ru.ok }}</button></menu>
+        </form>
+    </dialog>
+    <!--END SHOP-->
+    
+    <!--SETTING-->
+    <dialog id="dialog-setting" class="nes-dialog is-rounded">
+        <form method="dialog">
+            <div class="nes-container is-centered with-title">
+                <p class="title">Настройки</p>
+                <p><a href="javascript:void(0)" class="nes-btn">
+                        Очистить
+                    </a></p>
+            </div>
+            <menu class="dialog-menu"><button class="nes-btn is-primary">{{ lang.ru.ok }}</button></menu>
+        </form>
+    </dialog>
+    <!--END SETTING-->
 
-		//Регестрация воркера
+</div>
+   <!-- <div class="nes-container with-title is-centered" id="app">
+        <p class="title">Пацанский кликер</p>
+        <h1>{{ lang.ru.money }} - {{ coins.toFixed(4) }}</h1>
+        <p>{{ lang.ru.power }} - {{ power.toFixed(4) }}</p>
+        <p>Коинов в сек. - {{ auto_coins.toFixed(4) }}</p>
+        <button @click="click" class="nes-btn is-primary" id="click">Кликнуть + 0.0001</button><br><br>
+
+        <div v-for="item in levels">
+            {{ item.text }} + {{ item.auto_coins }}<button @click="auto" v-bind:data-id="item.id" class="nes-btn">{{ lang.ru.price}}: {{ item.price.toFixed(4) }}</button><br><br>
+        </div>
+        
+        <br><br>
+        
+        <button class="nes-btn is-primary" onclick="document.getElementById('dialog-shop').showModal();">{{ lang.ru.shop }}</button><br>
+        
+        <button class="nes-btn is-primary" onclick="document.getElementById('dialog-setting').showModal();">{{ lang.ru.setting }}</button>
+        
+        <br><br>
+        
+        <button class="nes-btn is-warning" onclick="document.getElementById('dialog-admin').showModal();">Админ</button>
+
+        <dialog class="nes-dialog is-rounded" id="dialog-shop">
+            <form method="dialog">
+                <div class="nes-container is-centered with-title">
+                    <p class="title">{{ lang.ru.shop }}</p>
+                    <p>{{ lang.ru.power }} - {{ power.toFixed(4) }}</p>
+                    <p>{{ lang.ru.money }} - {{ coins.toFixed(4) }}</p>
+                    <p v-for="item in shop">
+                        <a href="javascript:void(0)" class="nes-btn" @click="buy" v-bind:data-id="item.id">
+                            <span class="nes-text is-error">{{ item.price.toFixed(4) }}</span> {{ item.text }} — {{ item.power.toFixed(4) }}
+                        </a>
+                    </p>
+                </div>
+                <menu class="dialog-menu">
+                    <button class="nes-btn is-primary">{{ lang.ru.ok }}</button>
+                </menu>
+            </form>
+        </dialog>
+
+        <dialog class="nes-dialog is-rounded" id="dialog-setting">
+            <form method="dialog">
+                <div class="nes-container is-centered with-title">
+                    <p class="title">{{ lang.ru.setting }}</p>
+                    <p>
+                        <a href="javascript:void(0)" class="nes-btn" @click="restart">
+                            Очистить
+                        </a>
+                    </p>
+                </div>
+                <menu class="dialog-menu">
+                    <button class="nes-btn is-primary">{{ lang.ru.ok }}</button>
+                </menu>
+            </form>
+        </dialog>
+    </div>-->
+
+    <dialog class="nes-dialog is-rounded" id="dialog-default">
+        <form method="dialog">
+            <p class="title">Малява</p>
+            <p>Не хватает коинов</p>
+            <menu class="dialog-menu">
+                <button class="nes-btn is-primary">Принял</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <dialog class="nes-dialog is-rounded" id="dialog-admin">
+        <form method="dialog">
+            <p class="title">Инфо</p>
+            <p>Набираете коины, скоро будет обнова.</p>
+            <p>
+                <a href="https://vk.com/razrabw" class="nes-text is-primary">VK</a>
+                <a href="https://t.me/Razrab" class="nes-text is-primary">TG</a>
+            </p>
+            <menu class="dialog-menu">
+                <button class="nes-btn is-primary">Понял</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <script src="js/core.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="js/index.js"></script>
+
+    <!--<script>
+
+	    //Регестрация воркера
 	    if ('serviceWorker' in navigator) {
 	        navigator.serviceWorker
 	            .register('sw.js')
-	            .then(function () {
+	            .then(function() {
 	                console.log('Registration succeeded. Scope is ');
 	            })
-	            .catch(function (error) {
+	            .catch(function(error) {
 	                console.error('Trouble with sw: ', error);
 	            });
-	    }		
-	</script>
+	    }
+    </script>-->
+
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+       (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+       m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+       (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+       ym(54161962, "init", {
+            clickmap:true,
+            trackLinks:true,
+            accurateTrackBounce:true
+       });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/54161962" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- END Yandex.Metrika counter -->
 </body>
 </html>
