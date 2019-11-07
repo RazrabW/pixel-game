@@ -10,7 +10,7 @@ var app = new Vue({
 	el: '#app',
 	data: {
 		coins: 0,
-		power: 0, //сила на районе
+		power: 0,
 		auto_coins: 0,
 		prestige_count: prestige,
 		coins_offline: 0,
